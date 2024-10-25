@@ -1,8 +1,6 @@
 <?php 
 include 'server.php';
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +12,7 @@ include 'server.php';
 <body>
   <style>
     body {
-      background-image: url('wallpaper1.jpg');
+      background-image: url('wallpaper3.jpg');
     }
     li {
         text-decoration: none;

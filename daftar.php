@@ -1,7 +1,25 @@
 <?php 
 include 'server.php';
-?>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    $id = $_POST['id'];
+    $nama = $_POST['nama'];
+    $email = $_POST['email'];
+    $noHp = $_POST['noHp'];
+    $semester = $_POST['inlineRadioOptions'];
+    $ipk = $_POST['ipk'];
+    $beasiswa = $_POST['beasiswa'];
+    $status = 1;
+
+    $stmt = $conn->prepare("UPDATE users SET  nama = ?, status = ?,email = ?, noHp = ?, semester = ?, ipk = ?, jenis_beasiswa = ? WHERE id = ?");
+    $stmt->bind_param("sissidsi", $nama,$status, $email, $noHp, $semester, $ipk, $beasiswa, $id);
+    if ($stmt->execute()) {
+        echo "<script>alert('Data berhasil disimpan!'); window.location.href = 'hasil.php?id=$id';</script>";
+    } else {
+        echo "<script>alert('Data gagal disimpan!');</script>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +31,7 @@ include 'server.php';
 <body>
   <style>
     body {
-      background-image: url('wallpaper1.jpg');
+      background-image: url('wallpaper3.jpg');
     }
     li {
         text-decoration: none;
@@ -52,7 +70,7 @@ include 'server.php';
 <?php
 if (isset($_GET['nama'])) {
     $nama = $_GET['nama'];
-    $stmt = $conn->prepare("SELECT nama,email, semester, ipk, noHp FROM users WHERE nama = ? ");
+    $stmt = $conn->prepare("SELECT id, nama,email, semester, ipk, noHp FROM users WHERE nama = ? ");
     $stmt->bind_param("s", $nama);
 
     $stmt->execute();
@@ -61,6 +79,7 @@ if (isset($_GET['nama'])) {
     if($result->num_rows > 0) {
       $row = $result->fetch_assoc();
       $nama = $row['nama'];
+      $id = $row['id'];
 ?>
 
 <div class="center-card">
@@ -69,19 +88,20 @@ if (isset($_GET['nama'])) {
             <h5 class="card-title text-center">Form Beasiswa</h5>
             <p class="card-text text-center">Isi Data Diri Kamu :</p>
             
-            <form method="post">
+            <form method="post" action="">
                 <div class="form-group">
+                    <input type="hidden" name="id" id="id" value="<?= $row['id'] ?>"/>
                     <li>Masukkan Nama <span class="text-danger">*</span></li>
                     <li>
                         <input type="text" name="nama" id="nama" class="form-control" value="<?= $row['nama'] ?>" />
                     </li>
                     <li>Masukkan Email <span class="text-danger">*</span></li>
                     <li>
-                        <input type="email" name="email" id="email" class="form-control" require/>
+                        <input type="email" name="email" id="email" class="form-control" required/>
                     </li>
                     <li>Masukkan No Hp <span class="text-danger">*</span></li>
                     <li>
-                        <input type="number" name="noHp" id="noHp" class="form-control" require />
+                        <input type="number" name="noHp" id="noHp" class="form-control" required />
                     </li>
                     <li>Semester Saat Ini <span class="text-danger">*</span></li>
                 <li>
@@ -120,10 +140,10 @@ if (isset($_GET['nama'])) {
                 </li>
 
                     <li>IPK Saat Ini <span class="text-danger">*</span></li>
-                    <li><input type="number" id="ipk" class="form-control"  value="<?= $row['ipk'] ?>"/></li>
+                    <li><input type="number" id="ipk" name="ipk" class="form-control"  value="<?= $row['ipk'] ?>"/></li>
                     <li>
                     <label for="beasiswa">Jenis Beasiswa <span class="text-danger">*</span></label>
-                        <select class="form-control" id="beasiswa" require >
+                        <select class="form-control" id="beasiswa" name="beasiswa" required >
                             <option value="">Jenis Beasiswa</option>
                             <option value="akademik">Beasiswa Akademik</option>
                             <option value="non-akademik">Beasiswa Non-Akademik</option>
@@ -134,7 +154,7 @@ if (isset($_GET['nama'])) {
                     <li><input id="dokumen" type="file" class="form-control" accept=".pdf, .jpg, .zip" /></li>
                     <div class=" mt-4">
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-primary" id="daftar" onclick="kirim(event, this.form)" >Daftar</button>
+                            <button type="submit" class="btn btn-primary" id="daftar" >Daftar</button>
                             <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
                         </div>
                     </div>
